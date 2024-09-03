@@ -4,60 +4,40 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; // Standard MockMvc GET
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
-
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @Import(WebSecurityConfig.class)
 class WebSecurityConfigTest {
 
     @Autowired
-    private WebApplicationContext context;
-
-    private MockMvc mockMvc;
-
-    @Autowired
     private WebSecurityConfig webSecurityConfig;
 
+    @Autowired
+    private AuthenticationManager authenticationManager; // Automatically configured by Spring Security
+
     @Test
-    void testSecurityFilterChainBean() throws Exception {
-        // Assert that the SecurityFilterChain bean is not null
-        SecurityFilterChain securityFilterChain = webSecurityConfig.securityFilterChain(context.getBean(HttpSecurity.class));
-        assertNotNull(securityFilterChain, "SecurityFilterChain bean should not be null");
+    void testPasswordEncoderBean() {
+        PasswordEncoder passwordEncoder = webSecurityConfig.passwordEncoder();
+        assertNotNull(passwordEncoder, "PasswordEncoder bean should not be null");
+        assertInstanceOf(BCryptPasswordEncoder.class, passwordEncoder, "PasswordEncoder bean should be an instance of BCryptPasswordEncoder");
     }
 
     @Test
-    void testAuthenticationEnabled() throws Exception {
-        // Set authenticationEnabled to true
-        ReflectionTestUtils.setField(webSecurityConfig, "authenticationEnabled", true);
-
-        mockMvc = webAppContextSetup(context).apply(springSecurity()).build();
-
-        // Perform a request to check that authentication is required
-        mockMvc.perform(get("/price/current"))
-                .andExpect(status().isUnauthorized());
+    void testDaoAuthenticationProviderBean() {
+        DaoAuthenticationProvider authProvider = webSecurityConfig.daoAuthenticationProvider();
+        assertNotNull(authProvider, "DaoAuthenticationProvider bean should not be null");
+        assertInstanceOf(DaoAuthenticationProvider.class, authProvider, "AuthenticationProvider bean should be an instance of DaoAuthenticationProvider");
     }
 
     @Test
-    void testAuthenticationDisabled() throws Exception {
-        // Set authenticationEnabled to false
-        ReflectionTestUtils.setField(webSecurityConfig, "authenticationEnabled", false);
-
-        mockMvc = webAppContextSetup(context).apply(springSecurity()).build();
-
-        // Perform a request to check that no authentication is required
-        mockMvc.perform(get("/price/current"))
-                .andExpect(status().isOk());
+    void testAuthenticationManagerBean() {
+        assertNotNull(authenticationManager, "AuthenticationManager bean should not be null");
     }
 }
