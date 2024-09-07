@@ -11,6 +11,6 @@ DROP TABLE IF EXISTS btc_price_history CASCADE;
 CREATE TABLE btc_price_history
 (
     id        SERIAL PRIMARY KEY,
-    price     DECIMAL(18, 2) NOT NULL CHECK (price >= 0),
+    price     DECIMAL(18, 8) NOT NULL CHECK (price >= 0),
     timestamp TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

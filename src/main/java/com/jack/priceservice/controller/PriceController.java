@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/price")
 public class PriceController {
@@ -23,10 +25,10 @@ public class PriceController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity<Integer> getCurrentPrice() {
+    public ResponseEntity<BigDecimal> getCurrentPrice() {
         logger.info("Received request to get the current BTC price.");
 
-        int currentPrice = priceService.getPrice();
+        BigDecimal currentPrice = priceService.getPrice();
 
         logger.info("Current BTC price retrieved: {}", currentPrice);
 

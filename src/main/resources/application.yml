@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8080
 
 spring:
   profiles:
@@ -21,6 +21,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     open-in-view: false  # Disable open-in-view to avoid potential performance issues
 
@@ -35,21 +37,11 @@ logging:
     com.jack.priceservice: INFO
 
 springdoc:
-  api-docs:
-    path: /api-docs
   swagger-ui:
-    path: /swagger-ui-custom.html
+    path: /swagger-ui.html
 
 initial:
-  price: 100
-
-app:
-  jwtSecret: Xb34fJd9kPbvmJc84mDkV9b3Xb4fJd9kPbvmJc84mDkV9b3Xb34fJd9kPbvmJc84
-  jwtExpirationMs: 3600000
-
-security:
-  authentication:
-    enabled: false
+  price: 100.00
 
 # Docker profile (for running in containers)
 ---
@@ -67,6 +59,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     open-in-view: false  # Disable open-in-view to avoid potential performance issues
 
@@ -82,17 +76,9 @@ logging:
 
 springdoc:
   api-docs:
-    path: /api-docs
+    path: /v3/api-docs
   swagger-ui:
-    path: /swagger-ui-custom.html
+    path: /swagger-ui.html
 
 initial:
-  price: 100
-
-app:
-  jwtSecret: Xb34fJd9kPbvmJc84mDkV9b3Xb4fJd9kPbvmJc84mDkV9b3Xb34fJd9kPbvmJc84
-  jwtExpirationMs: 3600000
-
-security:
-  authentication:
-    enabled: false
+  price: 100.00

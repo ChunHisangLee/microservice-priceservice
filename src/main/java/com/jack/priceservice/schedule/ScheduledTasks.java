@@ -10,22 +10,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Component
 @Slf4j
 public class ScheduledTasks {
 
-    private static final int MIN_PRICE = 100;
-    private static final int MAX_PRICE = 460;
-    private static final int PRICE_INCREMENT = 10;
+    private static final double MIN_PRICE = 100;
+    private static final double MAX_PRICE = 460;
+    private static final double PRICE_INCREMENT = 10;
     public static final int SCHEDULE_RATE_MS = 5 * 1000;
 
     @Getter
     private boolean isIncreasing = true;
 
     @Getter
-    private int currentPrice = MIN_PRICE;
+    private double currentPrice = MIN_PRICE;
 
     private final PriceService priceService;
     private final BTCPriceHistoryRepository btcPriceHistoryRepository;
@@ -37,10 +38,10 @@ public class ScheduledTasks {
 
     @PostConstruct
     private void saveInitialPrice() {
-        priceService.setPrice(currentPrice);
+        priceService.setPrice(BigDecimal.valueOf(currentPrice));
 
         BTCPriceHistory initialPriceHistory = new BTCPriceHistory();
-        initialPriceHistory.setPrice(currentPrice);
+        initialPriceHistory.setPrice(BigDecimal.valueOf(currentPrice));
         initialPriceHistory.setTimestamp(LocalDateTime.now());
         btcPriceHistoryRepository.save(initialPriceHistory);
 
@@ -67,11 +68,11 @@ public class ScheduledTasks {
         log.info("Updated BTC Price: {}", currentPrice);
 
         // Save the updated price to Redis
-        priceService.setPrice(currentPrice);
+        priceService.setPrice(BigDecimal.valueOf(currentPrice));
 
         // Save the updated price to the database
         BTCPriceHistory priceHistory = new BTCPriceHistory();
-        priceHistory.setPrice(currentPrice);
+        priceHistory.setPrice(BigDecimal.valueOf(currentPrice));
         priceHistory.setTimestamp(LocalDateTime.now());
         btcPriceHistoryRepository.save(priceHistory);
 

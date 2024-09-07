@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ public class BTCPriceHistory {
 
     @Min(value = 0, message = "Price must be greater than or equal to 0")
     @Column(nullable = false)
-    private double price;
+    private BigDecimal price;
 
     @Builder.Default
     @Column(nullable = false, updatable = false)

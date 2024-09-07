@@ -3,6 +3,7 @@ package com.jack.priceservice.dto;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -12,6 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BTCPriceHistoryDTO {
     private Long id;
-    private double price;
+    private BigDecimal price;
     private LocalDateTime timestamp;
 }
