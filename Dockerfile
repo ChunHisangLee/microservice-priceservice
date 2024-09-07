@@ -1,30 +1,31 @@
-# Use a smaller OpenJDK image
-FROM openjdk:21-jdk-slim
+# Stage 1: Build the application using Maven
+FROM maven:3.8.6 AS build
 
-# Maintainer information
-LABEL maintainer="jack"
+# Install OpenJDK 21 manually
+RUN apt-get update && apt-get install -y openjdk-21-jdk
 
-# Copy the Maven build artifact from the target directory to the container
-COPY target/price-service-0.0.1-SNAPSHOT.jar /app/price-service.jar
-
-# Set the working directory inside the container
 WORKDIR /app
 
+# Copy the Maven project files
+COPY pom.xml ./
+COPY src ./src
+
+# Stage 2: Use a smaller OpenJDK image for the final artifact
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+# Copy the built artifact from the previous stage
+COPY target/price-service-0.0.1-SNAPSHOT.jar /app/price-service.jar
 # Expose the port the application will run on
 EXPOSE 8080
 
-# Set environment variables (can be overridden in docker-compose.yml)
-ENV SPRING_DATASOURCE_URL="jdbc:postgresql://db:5432/pricedb" \
-    SPRING_DATASOURCE_USERNAME="postgres" \
-    SPRING_DATASOURCE_PASSWORD="Ab123456" \
-    SPRING_REDIS_HOST="redis" \
-    SPRING_REDIS_PORT="6379" \
-    SPRING_REDIS_PASSWORD="Ab123456" \
-    INITIAL_PRICE="100.00" \
-    APP_JWT_SECRET="Xb34fJd9kPbvmJc84mDkV9b3Xb4fJd9kPbvmJc84mDkV9b3Xb34fJd9kPbvmJc84" \
-    APP_JWT_EXPIRATION_MS="3600000" \
-    SECURITY_AUTHENTICATION_ENABLED="false" \
-    SPRING_PROFILES_ACTIVE="docker"
+# Set a default timezone
+ENV TZ=UTC
 
-# Run the Spring Boot application
+# Add a health check to verify if the service is running correctly
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+# Use exec form of CMD to ensure signals are received by the JVM process
 CMD ["java", "-jar", "/app/price-service.jar"]

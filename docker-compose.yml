@@ -1,3 +1,4 @@
+
 services:
   db:
     image: postgres:latest
@@ -10,20 +11,20 @@ services:
     networks:
       - assignment-network
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:latest
-    command: [ "redis-server", "--requirepass", "Ab123456" ]
+    command: ["redis-server", "--requirepass", "Ab123456"]
     ports:
       - "6379:6379"  # Exposing Redis on port 6379
     networks:
       - assignment-network
     healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "Ab123456", "ping" ]
+      test: ["CMD", "redis-cli", "-a", "Ab123456", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
